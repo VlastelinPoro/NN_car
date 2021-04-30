@@ -14,6 +14,7 @@ class ATesting_carGameMode : public AGameModeBase
 public:
 	ATesting_carGameMode();
 	virtual void BeginPlay() override;
+	void Timer();
 	void SpawnTrainedCar();
 	void SpawnPopulation();
 	void RemovePopulation();
@@ -47,6 +48,8 @@ public:
 	bool GetPlaying();
 	UFUNCTION(BlueprintCallable)
 	bool GetTraining();
+	UFUNCTION(BlueprintCallable)
+	float GetBestTime();
 	void SaveWeights();
 	TArray<ATesting_carPawn*> Sort(TArray<ATesting_carPawn*> arr);
 	AActor *SpawnPoint = nullptr;
@@ -83,12 +86,15 @@ public:
 	TSubclassOf<class ATesting_carPawn> CarClass;
 
 	float sum_score = 0;
+	int time = 0; 
 	int num_inputs = 7;
 	int num_outputs = 2;
 	int num_hidden  = 1;
 	int num_neuron_per_hidden = 10;
 	int generation = 1;
 	int max_score;
+	float best_time = 10000;
+	ATesting_carPawn* best_car;
 	TArray<FString> savingstats = {"Generation;Av. score;Max score;Av. speed;Av. distance"};
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

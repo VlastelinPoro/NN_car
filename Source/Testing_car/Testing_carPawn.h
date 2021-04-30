@@ -100,6 +100,11 @@ public:
 	float av_speed = 0;
 	float probability;
 	float checkpoint = 0;
+	float _time = 0;
+	bool check = true;
+	float lap_time = 0;
+	float best_time_reward = 0;
+	int count_checkpoint = 0;
 	// End Actor interface
 
 	UPROPERTY(EditAnywhere)
@@ -128,7 +133,8 @@ public:
 	static const FName LookRightBinding;
 	float Map(float nf, float nt, float of, float ot, float val);
 	void LoadTrainingSet();
-	
+	void settime();
+
 private:
 	bool trainingDone = false;
 	float trainingProgress;

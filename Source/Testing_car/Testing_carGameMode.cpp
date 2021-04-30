@@ -16,6 +16,8 @@ ATesting_carGameMode::ATesting_carGameMode()
 
 void ATesting_carGameMode::BeginPlay()
 {
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &ATesting_carGameMode::Timer, 1, true);
 	Super::BeginPlay();
 	TActorIterator<AActor> ActorItr = TActorIterator<AActor>(GetWorld());
 
@@ -60,6 +62,10 @@ void ATesting_carGameMode::BeginPlay()
 	}
 }
 
+void  ATesting_carGameMode::Timer()
+{
+	time ++;
+}
 
 void  ATesting_carGameMode::SpawnTrainedCar()
 {
@@ -76,7 +82,7 @@ void  ATesting_carGameMode::SpawnTrainedCar()
 		Cars_test[i]->Dead=false;
 		Cars_test[i]->SetActorTickEnabled(true);
 		Ann[i]->LoadWeights(i);
-		GEngine->AddOnScreenDebugMessage(i,5,FColor::Green, Ann[i]->PrintWeights());
+		//GEngine->AddOnScreenDebugMessage(i,5,FColor::Green, Ann[i]->PrintWeights());
 		Cars_test[i]->ann = *Ann[i];
 		Cars_test[i]->score = 0;
 	}
@@ -190,7 +196,7 @@ void ATesting_carGameMode::CrossOver()
 {
 	for (int i  = 0; i < Num_best_car; i++)
 		*Ann[i] = Selected_ANN[i];
-	for(int c = 0; c < population-Num_new_random_car; c++)
+	for(int c = Num_best_car; c < population-Num_new_random_car; c++)
 	{
 		int random_index_selected_ann_1 = (rand() % (Selected_ANN.Num()));
 		int random_index_selected_ann_2 = (rand() % (Selected_ANN.Num()));
@@ -245,8 +251,11 @@ void ATesting_carGameMode::RemainderStochasticSampling()
 
 void ATesting_carGameMode::Genetic_algorithm()
 {
+	//best_car->score += 10000;
 	SavingStat();
+	time = 0;
 	max_score = 0;
+	best_time = 10000;
 	//RemainderStochasticSampling();
 	Selection();
 	CrossOver();
@@ -264,7 +273,7 @@ void ATesting_carGameMode::SavingStat()
 	SaveDirectory += filename;
 	savingstats.Add(FString::FromInt(generation) + ';' + FString::SanitizeFloat(GetAvScore()) + ';' +
 					FString::SanitizeFloat(GetMaxScore()) + ';' + FString::SanitizeFloat(GetAvSpeed()) + ';' +
-					FString::SanitizeFloat(GetAvDistance()));
+					FString::SanitizeFloat(GetAvDistance()) + ';' + FString::SanitizeFloat(GetBestTime()));
 	FString FinalString;
 	for (FString &Each : savingstats)
 	{
@@ -346,6 +355,19 @@ bool ATesting_carGameMode::GetTraining()
 	return Training;
 }
 
+float ATesting_carGameMode::GetBestTime()
+{
+	for(int i = 0; i < population; i++)
+	{
+		if ((best_time > Cars_test[i]->lap_time) && (Cars_test[i]->lap_time!=0))
+		{
+			best_time = Cars_test[i]->lap_time;
+			Cars_test[i]->best_time_reward=10000;
+		}
+	}
+	return best_time;
+}
+
 void ATesting_carGameMode::SaveWeights()
 {
 	//Selection();
@@ -359,6 +381,7 @@ void ATesting_carGameMode::SaveWeights()
 void ATesting_carGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	if (Training)
 	{
 		int counter=0;
@@ -366,7 +389,7 @@ void ATesting_carGameMode::Tick(float DeltaTime)
 		{
 			if (Cars_test[i]->Dead==true)
 				counter++;
-			//GEngine->AddOnScreenDebugMessage(i,0.0f,FColor::Green, FString::SanitizeFloat(Cars_test[i]->score));
+			//GEngine->AddOnScreenDebugMessage(i+1,0.0f,FColor::Green, FString::SanitizeFloat(Cars_test[i]->lap_time));
 		}
 	
 		if (counter == population)
@@ -379,6 +402,14 @@ void ATesting_carGameMode::Tick(float DeltaTime)
 		for(int i = 0; i <= Num_best_car; i++)
 		{
 			//GEngine->AddOnScreenDebugMessage(i,5,FColor::Green, FString::SanitizeFloat(Cars_test[i]->score));
+		}
+	}
+	GEngine->AddOnScreenDebugMessage(0,5,FColor::Green, FString::SanitizeFloat(time));
+	if (time>100)
+	{
+		for(int i = 0; i < population; i++)
+		{
+			Cars_test[i]->Dead=true;
 		}
 	}
 }

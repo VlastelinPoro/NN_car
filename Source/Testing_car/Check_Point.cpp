@@ -16,4 +16,5 @@ void	ACheck_Point::AddScore(AActor *OverlappedActor, AActor *otherActor)
     if (car == nullptr)
         return ;
     car->checkpoint += this->scoreToAdd;
+    car->count_checkpoint += 1;
 }

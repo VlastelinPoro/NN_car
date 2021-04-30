@@ -260,17 +260,32 @@ void ATesting_carPawn::LoadTrainingSet()
  */
 }
 
+void ATesting_carPawn::settime()
+{
+	_time+=0.1f;
+}
+
 void ATesting_carPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	//LoadTrainingSet();
 	GetMesh()->SetNotifyRigidBodyCollision(true);
 	GetMesh()->OnComponentHit.AddDynamic(this, &ATesting_carPawn::OnHit);
+	FTimerHandle Handle;
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &ATesting_carPawn::settime, 0.1f, true);
 }
+
 
 void ATesting_carPawn::Tick(float Delta)
 {
 	Super::Tick(Delta);
+	if (count_checkpoint == 52)
+	{
+		lap_time = _time;
+		_time = 0;
+		count_checkpoint = 0;
+	}
+	
 	if (!Dead)
 	{
 		car_speed = GetVehicleMovement()->GetForwardSpeed()/10;
@@ -278,7 +293,10 @@ void ATesting_carPawn::Tick(float Delta)
 		car_distance += car_speed *  Delta;
 		sum_speed += car_speed;
 		av_speed = sum_speed/counter;
-		score = car_distance/10 + checkpoint + av_speed; //Fitness function of the car
+		score =  checkpoint + av_speed + best_time_reward; //Fitness function of the car
+		//score = car_distance/10 + checkpoint + av_speed; //Fitness function of the car
+		//score = car_distance/10 + checkpoint + av_speed; //Fitness function of the car
+		//score = car_distance/10 + checkpoint + av_speed; //Fitness function of the car
 		if(!playing)
 		{
 			vector<double> calcOutputs = {};
