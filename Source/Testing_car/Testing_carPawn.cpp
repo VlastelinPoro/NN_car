@@ -75,49 +75,6 @@ ATesting_carPawn::ATesting_carPawn()
 	Camera->bUsePawnControlRotation = false;
 	Camera->FieldOfView = 90.f;
 	Camera->Activate();
-
-	/*
-	// Create In-Car camera component 
-	InternalCameraOrigin = FVector(0.0f, -40.0f, 120.0f);
-
-	InternalCameraBase = CreateDefaultSubobject<USceneComponent>(TEXT("InternalCameraBase"));
-	InternalCameraBase->SetRelativeLocation(InternalCameraOrigin);
-	InternalCameraBase->SetupAttachment(GetMesh());
-
-	InternalCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("InternalCamera"));
-	InternalCamera->bUsePawnControlRotation = false;
-	InternalCamera->FieldOfView = 90.f;
-	InternalCamera->SetupAttachment(InternalCameraBase);
-
-	//Setup TextRenderMaterial
-	static ConstructorHelpers::FObjectFinder<UMaterial> TextMaterial(TEXT("Material'/Engine/EngineMaterials/AntiAliasedTextMaterialTranslucent.AntiAliasedTextMaterialTranslucent'"));
-	
-	UMaterialInterface* Material = TextMaterial.Object;
-
-	// Create text render component for in car speed display
-	InCarSpeed = CreateDefaultSubobject<UTextRenderComponent>(TEXT("IncarSpeed"));
-	InCarSpeed->SetTextMaterial(Material);
-	InCarSpeed->SetRelativeLocation(FVector(70.0f, -75.0f, 99.0f));
-	InCarSpeed->SetRelativeRotation(FRotator(18.0f, 180.0f, 0.0f));
-	InCarSpeed->SetupAttachment(GetMesh());
-	InCarSpeed->SetRelativeScale3D(FVector(1.0f, 0.4f, 0.4f));
-
-	// Create text render component for in car gear display
-	InCarGear = CreateDefaultSubobject<UTextRenderComponent>(TEXT("IncarGear"));
-	InCarGear->SetTextMaterial(Material);
-	InCarGear->SetRelativeLocation(FVector(66.0f, -9.0f, 95.0f));	
-	InCarGear->SetRelativeRotation(FRotator(25.0f, 180.0f,0.0f));
-	InCarGear->SetRelativeScale3D(FVector(1.0f, 0.4f, 0.4f));
-	InCarGear->SetupAttachment(GetMesh());
-	
-	// Colors for the incar gear display. One for normal one for reverse
-	GearDisplayReverseColor = FColor(255, 0, 0, 255);
-	GearDisplayColor = FColor(255, 255, 255, 255);
-
-	// Colors for the in-car gear display. One for normal one for reverse
-	GearDisplayReverseColor = FColor(255, 0, 0, 255);
-	GearDisplayColor = FColor(255, 255, 255, 255);
-	*/
 	bInReverseGear = false;
 	
 	CollisionParams.AddIgnoredActor(this);
@@ -173,8 +130,13 @@ float ATesting_carPawn::Map(float nf, float nt, float of, float ot, float val)
 void ATesting_carPawn::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	this->Dead = true;
-	GetMesh()->SetMaterial(2, mat_dead);
+	crash++;
+
+	if (crash == 1)
+	{
+		this->Dead = true;
+		GetMesh()->SetMaterial(2, mat_dead);
+	}
 	//GEngine->AddOnScreenDebugMessage(0,5.0f,FColor::Green, this->ann.PrintWeights());
 	//GEngine->AddOnScreenDebugMessage(1,5.0f,FColor::Green, FString::SanitizeFloat(this->score));
 }
@@ -195,69 +157,6 @@ vector<FString> ATesting_carPawn::Split(FString line, FString delit)
 
 void ATesting_carPawn::LoadTrainingSet()
 {
-	/*
-	FString path = FPaths::ProjectDir() + "/trainingData.txt";
-	vector<double> calcOutputs = {};
-	vector<double> inputs = {};
-	vector<double> outputs = {};
-	TArray<FString> lines;
-	IPlatformFile& file = FPlatformFileManager::Get().GetPlatformFile();
-	if(file.FileExists(*path))
-	{
-		FFileHelper::LoadFileToStringArray(lines, *path);
-		
-		for (int i = 0 ; i < epochs; i++)
-		{
-			sse = 0;
-			FString currentWeights = ann.PrintWeights();
-			
-			for(int j=0;j<lines.Num();j++)
-			{
-				vector<FString> data = Split(lines[j],",");
-				float thisError = 0;
-				float test = FCString::Atof(*data[5]);
-				float test_1 = FCString::Atof(*data[6]);
-				if ((test != 0) && (test_1 != 0))
-				{
-					inputs.clear();
-					outputs.clear();
-					inputs.push_back(FCString::Atof(*data[0]));
-					inputs.push_back(FCString::Atof(*data[1]));
-					inputs.push_back(FCString::Atof(*data[2]));
-					inputs.push_back(FCString::Atof(*data[3]));
-					inputs.push_back(FCString::Atof(*data[4]));
-
-					double o1 = Map(0,1,-1,1,FCString::Atof(*data[5]));
-					outputs.push_back(o1);
-					double o2 = Map(0,1,-1,1,FCString::Atof(*data[6]));
-					outputs.push_back(o2);
-
-					calcOutputs = ann.Train(inputs,outputs);
-					thisError = (pow((float)outputs[0]-calcOutputs[0],2)
-						+ pow((float)outputs[1]-calcOutputs[1],2))/2.0f;
-				}
-				sse+=thisError;
-			}
-			trainingProgress = (float)i/(float)epochs;
-			GEngine->AddOnScreenDebugMessage(2,10.0f,FColor::Green, FString::SanitizeFloat(trainingProgress));
-			sse /= lines.Num();
-
-			if(lastSSE < sse)
-			{
-				ann.LoadWeights(currentWeights);
-				ann.alpha = FMath::Clamp((float)ann.alpha - 0.001f,0.01f,0.9f);
-			}
-			else //increase alpha
-			{
-				ann.alpha = FMath::Clamp((float)ann.alpha + 0.001f,0.01f,0.9f);
-				lastSSE = sse;
-			}
-			
-			GEngine->AddOnScreenDebugMessage(1,10.0f,FColor::Green, FString::SanitizeFloat(lastSSE));	
-		}
-		trainingDone = true;
-	}
- */
 }
 
 void ATesting_carPawn::settime()
@@ -281,6 +180,7 @@ void ATesting_carPawn::Tick(float Delta)
 	Super::Tick(Delta);
 	if (count_checkpoint == 52)
 	{
+		lap++;
 		lap_time = _time;
 		_time = 0;
 		count_checkpoint = 0;
@@ -293,10 +193,11 @@ void ATesting_carPawn::Tick(float Delta)
 		car_distance += car_speed *  Delta;
 		sum_speed += car_speed;
 		av_speed = sum_speed/counter;
+		//score = checkpoint; //Fitness function of the car
+		//score = car_distance + av_speed; //Fitness function of the car
+		//score = checkpoint + av_speed; //Fitness function of the car
 		score =  checkpoint + av_speed + best_time_reward; //Fitness function of the car
-		//score = car_distance/10 + checkpoint + av_speed; //Fitness function of the car
-		//score = car_distance/10 + checkpoint + av_speed; //Fitness function of the car
-		//score = car_distance/10 + checkpoint + av_speed; //Fitness function of the car
+				
 		if(!playing)
 		{
 			vector<double> calcOutputs = {};
@@ -469,21 +370,11 @@ void ATesting_carPawn::Tick(float Delta)
 			//float rotationInput = Map(-1,1,0,1,(float) calcOutputs[1]);
 			float translationInput = calcOutputs[0];
 			float rotationInput = calcOutputs[1];
-			//float break_car = calcOutputs[2];
-			//GEngine->AddOnScreenDebugMessage(3,0.0f,FColor::Green, FString::SanitizeFloat(translationInput));
-			//GEngine->AddOnScreenDebugMessage(4,0.0f,FColor::Green, FString::SanitizeFloat(rotationInput));
-			
+
 			GetVehicleMovementComponent()->SetThrottleInput(translationInput);
 			GetVehicleMovementComponent()->SetSteeringInput(rotationInput);
 
-			/*
-			if (break_car>0)
-				GetVehicleMovementComponent()->SetHandbrakeInput(true);
-			else
-				GetVehicleMovementComponent()->SetHandbrakeInput(false);*/
-			//GEngine->AddOnScreenDebugMessage(1,5,FColor::Green, FString::SanitizeFloat(GetVehicleMovement()->GetForwardSpeed() * 0.036f));
-			//GEngine->AddOnScreenDebugMessage(2,5,FColor::Green, FString::SanitizeFloat(car_distance));
-			//GEngine->AddOnScreenDebugMessage(2,5,FColor::Green, FString::SanitizeFloat(counter));
+			
 			if (counter > 300 && score<5)
 			{
 				this->Dead = true;
@@ -500,7 +391,6 @@ void ATesting_carPawn::Tick(float Delta)
 	{
 		GetVehicleMovementComponent()->SetThrottleInput(0);
 		GetVehicleMovementComponent()->SetSteeringInput(0);
-		
 	}
 }	
 
@@ -525,22 +415,7 @@ void ATesting_carPawn::UpdateHUDStrings()
 
 void ATesting_carPawn::SetupInCarHUD()
 {
-	//APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	/*if ((PlayerController != nullptr) && (InCarSpeed != nullptr) && (InCarGear != nullptr) )
-	{
-		// Setup the text render component strings
-		InCarSpeed->SetText(SpeedDisplayString);
-		InCarGear->SetText(GearDisplayString);
-		
-		if (bInReverseGear == false)
-		{
-			InCarGear->SetTextRenderColor(GearDisplayColor);
-		}
-		else
-		{
-			InCarGear->SetTextRenderColor(GearDisplayReverseColor);
-		}
-	}*/
+
 }
 
 void ATesting_carPawn::UpdatePhysicsMaterial()

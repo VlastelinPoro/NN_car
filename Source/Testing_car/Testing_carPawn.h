@@ -104,7 +104,9 @@ public:
 	bool check = true;
 	float lap_time = 0;
 	float best_time_reward = 0;
+	int crash = 0;
 	int count_checkpoint = 0;
+	int lap = 0;
 	// End Actor interface
 
 	UPROPERTY(EditAnywhere)

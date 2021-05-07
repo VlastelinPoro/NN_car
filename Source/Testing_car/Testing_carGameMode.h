@@ -1,4 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/GameModeBase.h"
 #include "Testing_carPawn.h"
@@ -45,6 +44,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetMyScore();
 	UFUNCTION(BlueprintCallable)
+	float GetMyTime();
+	UFUNCTION(BlueprintCallable)
 	bool GetPlaying();
 	UFUNCTION(BlueprintCallable)
 	bool GetTraining();
@@ -68,8 +69,6 @@ public:
 	bool Playing = false;
 	UPROPERTY(EditAnywhere, Category="Car Settings")
 	float TraceDistance = 1000.0f;
-	UPROPERTY(EditAnywhere, Category="Car Settings")
-	int epochs = 1000;
 	UPROPERTY(EditAnywhere, Category="Car Settings")
 	int population = 20;
 	UPROPERTY(EditAnywhere, Category="GA Settings")
@@ -95,7 +94,7 @@ public:
 	int max_score;
 	float best_time = 10000;
 	ATesting_carPawn* best_car;
-	TArray<FString> savingstats = {"Generation;Av. score;Max score;Av. speed;Av. distance"};
+	TArray<FString> savingstats = {"Generation;Av. score;Max score;Av. speed;Av. distance;Best time"};
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 };

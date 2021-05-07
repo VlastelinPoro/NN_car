@@ -75,7 +75,6 @@ void  ATesting_carGameMode::SpawnTrainedCar()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		ATesting_carPawn *car  = GetWorld()->SpawnActor<ATesting_carPawn>(CarClass, SpawnPoint->GetActorLocation(), SpawnPoint->GetActorRotation(), SpawnParams);
-		car->epochs = this->epochs;
 		car->TraceDistance = this->TraceDistance;
 		Cars_test.Add(car);
 		Cars_test[i]->SpawnDefaultController();
@@ -91,7 +90,6 @@ void  ATesting_carGameMode::SpawnTrainedCar()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		ATesting_carPawn *car  = GetWorld()->SpawnActor<ATesting_carPawn>(CarClass, SpawnPoint->GetActorLocation(), SpawnPoint->GetActorRotation(), SpawnParams);
-		car->epochs = this->epochs;
 		car->TraceDistance = this->TraceDistance;
 		Cars_test.Add(car);
 		Cars_test[Num_best_car]->SpawnDefaultController();
@@ -112,7 +110,6 @@ void ATesting_carGameMode::SpawnPopulation()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		ATesting_carPawn *car  = GetWorld()->SpawnActor<ATesting_carPawn>(CarClass, SpawnPoint->GetActorLocation(), SpawnPoint->GetActorRotation(), SpawnParams);
-		car->epochs = this->epochs;
 		car->TraceDistance = this->TraceDistance;
 		Cars_test.Add(car);
 		Cars_test[i]->SpawnDefaultController();
@@ -223,7 +220,6 @@ void ATesting_carGameMode::CrossOver()
 		FString weight_after = Ann[c]->PrintWeights();
 	}
 }
-
 
 void ATesting_carGameMode::RemainderStochasticSampling()
 {
@@ -345,6 +341,12 @@ float ATesting_carGameMode::GetMyScore()
 	return Cars_test[Num_best_car]->score;
 }
 
+float ATesting_carGameMode::GetMyTime()
+{
+	return Cars_test[Num_best_car]->lap_time;
+}
+
+
 bool ATesting_carGameMode::GetPlaying()
 {
 	return Playing;
@@ -359,7 +361,7 @@ float ATesting_carGameMode::GetBestTime()
 {
 	for(int i = 0; i < population; i++)
 	{
-		if ((best_time > Cars_test[i]->lap_time) && (Cars_test[i]->lap_time!=0))
+		if ((best_time >= Cars_test[i]->lap_time) && (Cars_test[i]->lap_time!=0))
 		{
 			best_time = Cars_test[i]->lap_time;
 			Cars_test[i]->best_time_reward=10000;
